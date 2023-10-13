@@ -283,6 +283,22 @@ class BinarySearchTree(Generic[K, I]):
         else:
             real_prefix = prefix[:-2] + final
             print('{0}'.format(real_prefix), file=to)
+    
+
+    def __str__(self) -> str:
+        """ Return a string representation of the tree. """
+
+        return self.str_aux(self.root)
+    
+    def str_aux(self, current: TreeNode) -> str:
+        """ Return a string representation of the tree. """
+
+        if current is None:
+            return '    |    '
+        else:
+            return self.str_aux(current.left) + \
+                   str(current.key) + \
+                   self.str_aux(current.right)
 
 if __name__ == "__main__":
     bst = BinarySearchTree()
