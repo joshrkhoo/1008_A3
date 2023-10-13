@@ -11,6 +11,10 @@ class Mode1Navigator:
     def __init__(self, islands: list[Island], crew: int) -> None:
         """
         Student-TODO: Best/Worst Case
+
+        :complexity:
+            Best / worst case: O(nlogn)
+                - n is the number of islands
         """
         
         self.island_tree = BinarySearchTree() 
@@ -32,17 +36,17 @@ class Mode1Navigator:
         """
         Select islands to attack 
         Return a list of tuples with the Island and the amount of crewmates you are sending
-        - aim is to acquire the most money possible 
-        - we dont care about crewmates dying
-            - equal amount of pirates / marines dead
-                - so if u send 20 pirates, and there are 50 marines 
-                    - 20 pirates die, 20 marines die
-
-
 
         Student-TODO: Best/Worst Case
 
         :complexity: 
+            Best Case: O(1)
+                - Occurs when when we send all crew members to the first island
+                    - Break out of the loop after the first iteration
+            Worst Case: O(n)
+                - n is the number of islands 
+                - occurs when we have to traverse the entire tree
+
  
         """
         selected_islands = []
@@ -52,6 +56,7 @@ class Mode1Navigator:
         crew = self.crew
         # Create an in order iterator to traverse the tree
             # this is so its sorted from smallest to largest ratio
+
         iterator = BSTInOrderIterator(self.island_tree.root)
 
         while crew > 0:
@@ -82,6 +87,9 @@ class Mode1Navigator:
         Return a list of the amount of money you can make with the given crew size
 
         Student-TODO: Best/Worst Case
+
+        :complexity:
+            Best / worst case: O(C x N)
         """
         
         results = []
@@ -102,6 +110,11 @@ class Mode1Navigator:
         Update the island with the new money and marines
 
         Student-TODO: Best/Worst Case
+
+        :complexity:
+            Best / worst: O(logn)
+                - n is the number of islands
+                - occurs when we have to search for the node to update
         """
         
         island.money = new_money
