@@ -1,11 +1,22 @@
 from island import Island
 from data_structures.bst import BinarySearchTree
 from data_structures.bst import BSTInOrderIterator
-from data_structures.node import TreeNode
+from algorithms.mergesort import mergesort
+from algorithms.binary_search import binary_search
 
 class Mode1Navigator:
     """
     Student-TODO: short paragraph as per https://edstem.org/au/courses/12108/lessons/42810/slides/294117
+
+     
+
+
+
+
+
+
+
+
     """
 
     def __init__(self, islands: list[Island], crew: int) -> None:
@@ -15,6 +26,7 @@ class Mode1Navigator:
         :complexity:
             Best / worst case: O(nlogn)
                 - n is the number of islands
+                - occurs when we have to insert all the islands into the tree
         """
         
         self.island_tree = BinarySearchTree() 
@@ -28,9 +40,6 @@ class Mode1Navigator:
                 # so these islands will be at the left of the tree when using in order traversal
                     # larger ratio = less money per marine
             self.island_tree[island.marines / island.money] = island
-        
-        # print(self.island_tree)
-
 
     def select_islands(self) -> list[tuple[Island, int]]:
         """
@@ -67,17 +76,13 @@ class Mode1Navigator:
                 marines = island.marines
 
                 # if there are more marines than crew, send all the crew
-                if marines > crew:
-                    crew_sent = crew
-                else:
-                    crew_sent = marines
+                crew_sent = min(marines, crew)
                 selected_islands.append((island, crew_sent))
                 crew -= crew_sent
             except StopIteration:
                 break
 
         return selected_islands
-
 
 
         
@@ -89,20 +94,86 @@ class Mode1Navigator:
         Student-TODO: Best/Worst Case
 
         :complexity:
-            Best / worst case: O(C x N)
+            1008 version:
+                Best / worst: O(C * N)
+            1054 version:
+                Best / worst: O(N + ClogC)
         """
-        
-        results = []
 
-        for crew in crew_numbers:
-            self.crew = crew 
-            selected_islands = self.select_islands()
-            total_money = 0
-            for island, crew_sent in selected_islands:
-                total_money += island.money * crew_sent / island.marines
-            results.append(total_money)
+
+        ###################### 1008 version ############################
+        # N * C complexity
+        # results = []
+        # for crew in crew_numbers:
+        #     self.crew = crew 
+        #     total_money = 0
+        #     for island, crew_sent in self.select_islands():
+        #         total_money += island.money * crew_sent / island.marines
+        #     results.append(total_money)
+        # return results
+
+
+
+        ###################### 1054 version ############################
         
-        return results
+        money_made = [0] * len(crew_numbers)
+
+        # Original index, crew number
+        sorted_crew = [(i, crew) for i, crew in enumerate(crew_numbers)]
+        # Sort the crew numbers
+        sorted_crew = mergesort(sorted_crew, key=lambda x: x[1])
+
+        iterator = BSTInOrderIterator(self.island_tree.root) 
+
+        # Variable to keep track of the current island
+        node = next(iterator)
+        island = node.item
+        marines = island.marines
+        money = island.money
+
+        # Iterate through the sorted crew numbers
+        for i, item in enumerate(sorted_crew):
+            # get the original index and crew number
+            og_index, crew = item
+
+            # Use the previous money made so we dont have to recalculate
+            if i>0:
+                money_made[i] = money_made[i-1]
+                crew -= sorted_crew[i-1][1]
+
+            # Iterate through the islands
+            while crew > 0:
+
+                # Here we send marines to the island
+                try:
+                    crew_sent = min(marines, crew)
+                    money_made[i] += money * crew_sent / island.marines
+                    crew -= crew_sent
+                    marines -= crew_sent
+                    
+                    # If there are no more marines, go to the next island
+                    if marines == 0:
+                        node = next(iterator)
+                        island = node.item
+                        marines = island.marines
+                        money = island.money
+                except StopIteration:
+                    break
+
+
+        
+        og_order_money_made = [0] * len(crew_numbers)
+        # put the money made back into the original order
+            # match the index of each tuple to the original index
+        for i, item in enumerate(sorted_crew):
+            og_index, crew = item
+            og_order_money_made[og_index] = money_made[i]
+        
+        return og_order_money_made
+
+
+
+
     
 
     def update_island(self, island: Island, new_money: float, new_marines: int) -> None:
