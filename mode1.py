@@ -8,14 +8,20 @@ class Mode1Navigator:
     """
     Student-TODO: short paragraph as per https://edstem.org/au/courses/12108/lessons/42810/slides/294117
 
-     
 
+    The Mode1Navigator class employs a Binary Search Tree (BST) data structure for this purpose. 
+    The complexity analysis is as follows:
+    
+    Initialization (init): The complexity is O(nlogn) in the worst and best cases, where n is the number of islands. This is because each island needs to be inserted into the BST, resulting in n iterations through the islands, with each insertion taking O(logn) time.
 
+    Select Islands: In the best case, this operation takes O(1) time when all the crew is assigned to the first island, breaking out of the loop early. In the worst case, it takes O(n) time when all islands need to be considered. This operation involves traversing the entire BST.
 
+    Update Island: Both the best and worst cases for updating an island are O(logn), as it requires searching for the specific island node within the BST. 
 
+    Select Islands from Crew Numbers: In the 1008 version, the worst case is O(C * N), where C is the number of crew members, and N is the number of islands. It occurs when the entire tree is traversed for each crew number. In the 1054 version, the worst case is O(N + ClogC), as it traverses the tree once and sorts the crew numbers with a complexity of ClogC.
 
-
-
+    In summary, the algorithm's overall time complexity mainly depends on the operations performed with the BST. Initialization and selecting islands can be time-consuming, especially when all islands need to be considered. Updating islands and selecting islands based on crew numbers have more predictable and efficient complexities.
+        
 
     """
 
