@@ -91,6 +91,9 @@ class MaxHeap(Generic[T]):
         for k in range(len(points), 0, -1):
             self.sink(k)
         return self
+    
+    def __str__(self) -> str:
+        return str(self.the_array[1:self.length+1])
 
 
 if __name__ == '__main__':
