@@ -18,7 +18,6 @@ class Mode2Navigator:
 
     def add_islands(self, islands: list[Island]) -> None:
         """
-
         Student-TODO: Best/Worst Case
         """
         for island in islands:
@@ -81,7 +80,7 @@ class Mode2Navigator:
         score, island_index = sea.get_max()
         crew_sent = min(self.islands[island_index].marines, crew)
 
-        if score < if_skip:
+        if score <= if_skip:
             action = (None, 0)
         else:
             action = (island_index, crew_sent)
@@ -106,9 +105,16 @@ class Mode2Navigator:
 
         for i in range(self.n_pirates):
 
+            
+
             if len(self.heap_islands) > 0: 
 
                 island_index, crew_sent = self.choose_action(crew, self.heap_islands)
+                
+                if crew_sent == 0:
+                    results.append((None, 0))
+                    continue
+
                 results.append((self.islands[island_index], crew_sent))
 
                 # Update island
@@ -116,8 +122,6 @@ class Mode2Navigator:
 
                 # Add island back to heap
                 self.update_heap_islands(island_index, crew)
-
-
 
             else:
                 results.append((None, 0))
@@ -183,7 +187,6 @@ if __name__ == "__main__":
         sent = res[0][1]
 
         print(f"Test {i+1}: ", "pass" if expected[i]==[name, money, marines, sent] else "fail")
-        print(res)
 
     print("\nTest Set 2.")
 
@@ -213,10 +216,9 @@ if __name__ == "__main__":
         
     for i in range(4):
         print(f"Test {i+1}: ", "pass" if expected[i]==got[i] else "fail")
-        print(got[i])
 
 
-    print("\nTest Set 2.")
+    print("\nTest Set 3.")
 
     new_islands = [Island("F", 100, 5), Island("G", 100, 20)]
     m2.add_islands(new_islands)
@@ -239,7 +241,7 @@ if __name__ == "__main__":
     for i in range(4):
         print(f"Test {i+1}: ", "pass" if expected[i]==got[i] else "fail")
 
-    print("\nTest Set 1.")
+    print("\nTest Set 4.")
     m2 = Mode2Navigator(3)
 
     islands = [Island("A", 400, 100), Island("B", 300, 150)]
@@ -259,7 +261,7 @@ if __name__ == "__main__":
     print("Test 1: ", "passed" if len(res)==6 else "failed")
     print("Test 2: ", "passed" if res == [('A', 100), ('D', 90), ('E', 100), ('F', 100), ('F', 50), ('C', 5)]  else "failed")
 
-    print("\nTest Set 2.")
+    print("\nTest Set 5.")
 
     m2 = Mode2Navigator(100)
     islands = [Island("A", 400, 100), Island("B", 300, 150), Island("C", 100, 5), Island("D", 350, 90), Island("E", 300, 100)]
@@ -275,7 +277,7 @@ if __name__ == "__main__":
             passed = False
     print("Test 2: ", "passed" if passed else "failed")
 
-    print("\nTest Set 4.")
+    print("\nTest Set 6.")
     m2 = Mode2Navigator(100)
     res = m2.simulate_day(0)
     print("Test 1: ", "passed" if len(res) == 100 else "failed")
