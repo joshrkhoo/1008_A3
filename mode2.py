@@ -14,16 +14,31 @@ class Mode2Navigator:
         
         self.n_pirates = n_pirates
         self.islands = []
+        self.heap_islands = None
 
     def add_islands(self, islands: list[Island]) -> None:
         """
-
-        add islands to seas
 
         Student-TODO: Best/Worst Case
         """
         for island in islands:
             self.islands.append(island)
+
+    def create_heap_islands(self, islands: list[Island], crew: int) -> None:
+        """
+        Student-TODO: Best/Worst Case
+        """
+
+        new_islands = []
+
+        for num, island in enumerate(islands):
+            score = self.calculate_score(crew, island)
+            new_islands.append((score, num))
+        
+        # print(new_islands)
+
+        return MaxHeap.heapify(new_islands)
+
 
     
     def money_made(self, island: Island, crew: int) -> int:
@@ -34,54 +49,100 @@ class Mode2Navigator:
             return island.money
         return min(island.money, island.money * crew / island.marines)
     
+
+    
     def calculate_score(self, crew: int, island: Island) -> int:
         crew_sent = min(island.marines, crew)
         crew_remaining = crew - crew_sent
         money_made = self.money_made(island, crew_sent)
         score = 2 * crew_remaining + money_made
         return score
+    
+
+
+    def update_island(self, island: Island, crew: int) -> None:
+        island.money -= self.money_made(island, crew)
+        island.marines -= crew
+
+    
+    def update_heap_islands(self, island_index, crew: int) -> None:
+        """
+        Student-TODO: Best/Worst Case
+        """
+
+        if self.islands[island_index].money > 0:
+            updated_score = self.calculate_score(crew, self.islands[island_index])
+            self.heap_islands.add((updated_score, island_index))
+        
+
+
+    def choose_action(self, crew: int, sea) -> tuple[Island, int]:
+        if_skip = 2 * crew
+        score, island_index = sea.get_max()
+        crew_sent = min(self.islands[island_index].marines, crew)
+
+        if score < if_skip:
+            action = (None, 0)
+        else:
+            action = (island_index, crew_sent)
+
+        return action
+        
+
+
+
         
 
     def simulate_day(self, crew: int) -> list[tuple[Island|None, int]]:
         """
         Student-TODO: Best/Worst Case
         """
-        new_islands = []
-
-        # Calculate score for each island and add to new_islands
-        for num, island in enumerate(self.islands):
-            score = self.calculate_score(crew, island)
-            new_islands.append((score, num))
         
         # Create heap using new_islands list
-        heap_islands = MaxHeap.heapify(new_islands)
+        self.heap_islands = self.create_heap_islands(self.islands, crew)
 
 
         results = []
 
         for i in range(self.n_pirates):
-            crew_num = crew
-            # Get island with highest score
-            
-            if len(heap_islands) == 0:
+
+            if len(self.heap_islands) > 0: 
+
+                island_index, crew_sent = self.choose_action(crew, self.heap_islands)
+                results.append((self.islands[island_index], crew_sent))
+
+                # Update island
+                self.update_island(self.islands[island_index], crew_sent)
+
+                # Add island back to heap
+                self.update_heap_islands(island_index, crew)
+
+
+
+            else:
                 results.append((None, 0))
-                continue
 
-            island_score, island_index = heap_islands.get_max()
+            # island_score, island_index = self.heap_islands.get_max()
             
-            island = self.islands[island_index]
+            # island = self.islands[island_index]
             
-            crew_sent = min(island.marines, crew_num)
+            # crew_sent = min(island.marines, crew_num)
 
-            results.append((island, crew_sent))
-            money_made = self.money_made(island, crew_sent)
-            # Update island
-            island.money -= money_made
-            island.marines -= crew_sent
-            # Add island back to heap
-            if island.money > 0:
-                updated_score = self.calculate_score(crew, island)
-                heap_islands.add((money_made, island_index))
+            # if crew_sent == 0:
+            #     results.append((None, 0))
+            #     continue
+
+
+            # results.append((island, crew_sent))
+            # money_made = self.money_made(island, crew_sent)
+            # # Update island
+            # self.update_island(island, crew_sent)
+
+            # # Add island back to heap
+            # if island.money > 0:
+            #     updated_score = self.calculate_score(crew, island)
+            #     self.heap_islands.add((money_made, island_index))
+            
         
         return results
 
@@ -122,6 +183,7 @@ if __name__ == "__main__":
         sent = res[0][1]
 
         print(f"Test {i+1}: ", "pass" if expected[i]==[name, money, marines, sent] else "fail")
+        print(res)
 
     print("\nTest Set 2.")
 
@@ -146,9 +208,12 @@ if __name__ == "__main__":
             line.append([name, money, marines, sent])
 
         got.append(line)
+
+        # print(res)
         
     for i in range(4):
         print(f"Test {i+1}: ", "pass" if expected[i]==got[i] else "fail")
+        print(got[i])
 
 
     print("\nTest Set 2.")
@@ -168,6 +233,8 @@ if __name__ == "__main__":
             line.append([name, money, marines, sent])
 
         got.append(line)
+
+        # print(res)
     
     for i in range(4):
         print(f"Test {i+1}: ", "pass" if expected[i]==got[i] else "fail")
