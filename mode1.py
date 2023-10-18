@@ -153,9 +153,12 @@ class Mode1Navigator:
                 # Here we send marines to the island
                 try:
                     crew_sent = min(marines, crew)
-                    money_made[i] += money * crew_sent / island.marines
-                    crew -= crew_sent
-                    marines -= crew_sent
+                    if crew_sent == 0:
+                        money_made[i] += 0
+                    else:
+                        money_made[i] += money * crew_sent / island.marines
+                        crew -= crew_sent
+                        marines -= crew_sent
                     
                     # If there are no more marines, go to the next island
                     if marines == 0:
@@ -196,6 +199,8 @@ class Mode1Navigator:
         
         island.money = new_money
         island.marines = new_marines
+
+
 
 if __name__ == "__main__":
     # islands = [Island("A", 400, 100), Island("B", 300, 150), Island("C", 100, 5), Island("D", 350, 90), Island("E", 300, 100)]
