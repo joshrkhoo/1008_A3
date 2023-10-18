@@ -5,11 +5,68 @@ from data_structures.heap import MaxHeap
 class Mode2Navigator:
     """
     Student-TODO: short paragraph as per https://edstem.org/au/courses/12108/lessons/42810/slides/294117
+
+    Data Structures:
+        - islands: list of islands
+            - A list was used as it had O(1) access time to the islands and O(n) time to add islands
+            - This allowed for the use of enumeration to keep track of the island index, avoiding the comparision between island objects when the score was the same
+                - (score, index)
+        - heap_islands: heap of islands
+            - A MaxHeap was used as it served its main purpose of functioning as a priority queue
+            - This was used to keep track of the islands with the highest score
+            - It also made sense as the pirates would plunder the island with the highest score first
+            - Using a different data structure would have resulted in a higher time complexity
+        
+    Time Complexity:
+        Initialisation:
+            - O(1)
+            - Constant operations are used
+        add_islands:
+            - O(n)
+                - n is the number of islands
+            - Iterate through the list of islands and add them to the sea
+        create_heap_islands:   
+            - O(n)  
+                - n is the number of islands
+            - This is beacuse heapify is O(n) and the iteration is O(n)
+                so the total time complexity is O(n + n) = O(2n) = O(n)
+        money_made:
+            - O(1)
+            - Constant operations are used
+        calculate_score:
+            - O(1)
+            - Constant operations are used
+        update_island:  
+            - O(1)
+            - Constant operations are used
+        update_heap_islands:
+            - O(1)
+                - This would occur when no need to rise
+            - O(logn)
+                - n is the number of islands
+            - This is because add uses the rise function which is O(logn)
+        choose_action:
+            - O(logn)
+                - n is the number of islands
+            - This is because get_max is O(logn) due to sink
+        simulate_day:
+            - O(n + clogn)
+                - n is the number of islands
+                - c is the number of pirates
+                - This occurs due to the following reasons:
+                    - creation of sea is O(n)
+                    - for loop is O(c)
+                    - choose_action is O(logn) always due to get_max
+
+
     """
 
     def __init__(self, n_pirates: int) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Initialises a new navigator with the given number of pirates.
+
+        :complexity: 
+            Best/Worst: O(1)
         """
         
         self.n_pirates = n_pirates
@@ -18,14 +75,26 @@ class Mode2Navigator:
 
     def add_islands(self, islands: list[Island]) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Adds the given islands to the sea
+
+        :complexity:
+            Best/Worst: O(n)
+                - n is the number of islands
         """
         for island in islands:
             self.islands.append(island)
 
     def create_heap_islands(self, islands: list[Island], crew: int) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Creates a heap of islands based on the score of each island
+
+        :complexity:
+            Best/Worst: O(n)
+                - n is the number of islands
+                - calculate_score is O(1)
+                - heapify is O(n) 
+                    - O(n + n) = O(2n) = O(n)
+
         """
 
         new_islands = []
@@ -42,7 +111,10 @@ class Mode2Navigator:
     
     def money_made(self, island: Island, crew: int) -> int:
         """
-        Student-TODO: Best/Worst Case
+        Calculates the money made from plundering an island
+
+        :complexity:
+            Best/Worst: O(1)
         """
         if island.marines == 0:
             return island.money
@@ -51,6 +123,12 @@ class Mode2Navigator:
 
     
     def calculate_score(self, crew: int, island: Island) -> int:
+        """
+        Calculates the score of an island
+
+        :complexity:
+            Best/Worst: O(1)
+        """
         crew_sent = min(island.marines, crew)
         crew_remaining = crew - crew_sent
         money_made = self.money_made(island, crew_sent)
@@ -60,13 +138,27 @@ class Mode2Navigator:
 
 
     def update_island(self, island: Island, crew: int) -> None:
+        """
+        Updates the island after plundering
+
+        :complexity:
+            Best/Worst: O(1)
+        """
         island.money -= self.money_made(island, crew)
         island.marines -= crew
 
     
     def update_heap_islands(self, island_index, crew: int) -> None:
         """
-        Student-TODO: Best/Worst Case
+        Updates the sea/heap of islands after plundering
+
+        :complexity:
+            Best case: O(1)
+                - no need to rise
+            Worst case: O(logn)
+                - n is the number of islands
+                - add is O(1)
+                - rise is O(logn)
         """
 
         if self.islands[island_index].money > 0:
@@ -76,6 +168,17 @@ class Mode2Navigator:
 
 
     def choose_action(self, crew: int, sea) -> tuple[Island, int]:
+        """
+        Chooses the best action to take
+
+        :complexity:
+            Best/Worst: O(log n)
+                - n is the number of islands
+                - get_max is O(log n) due to sink
+                - calculate_score is O(1)
+                - add is O(1)
+        """
+
         if_skip = 2 * crew
         score, island_index = sea.get_max()
         crew_sent = min(self.islands[island_index].marines, crew)
@@ -94,15 +197,26 @@ class Mode2Navigator:
 
     def simulate_day(self, crew: int) -> list[tuple[Island|None, int]]:
         """
-        Student-TODO: Best/Worst Case
+        Simulates a day of plundering
+
+        :complexity:
+            Best/Worst: O(n + clogn)
+                - n is the number of islands
+                - c is the number of pirates
+                - This occurs due to the following reasons:
+                    - creation of sea is O(n)
+                    - for loop is O(c)
+                    - choose_action is O(logn) always due to get_max
         """
         
         # Create heap using new_islands list
+        # O(n)
         self.heap_islands = self.create_heap_islands(self.islands, crew)
 
 
         results = []
 
+        # O(c)
         for i in range(self.n_pirates):
 
             
@@ -124,29 +238,7 @@ class Mode2Navigator:
                 self.update_heap_islands(island_index, crew)
 
             else:
-                results.append((None, 0))
-
-            # island_score, island_index = self.heap_islands.get_max()
-            
-            # island = self.islands[island_index]
-            
-            # crew_sent = min(island.marines, crew_num)
-
-            # if crew_sent == 0:
-            #     results.append((None, 0))
-            #     continue
-
-
-            # results.append((island, crew_sent))
-            # money_made = self.money_made(island, crew_sent)
-            # # Update island
-            # self.update_island(island, crew_sent)
-
-            # # Add island back to heap
-            # if island.money > 0:
-            #     updated_score = self.calculate_score(crew, island)
-            #     self.heap_islands.add((money_made, island_index))
-            
+                results.append((None, 0))            
         
         return results
 
