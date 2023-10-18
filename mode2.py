@@ -191,9 +191,7 @@ class Mode2Navigator:
         return action
         
 
-
-
-        
+ 
 
     def simulate_day(self, crew: int) -> list[tuple[Island|None, int]]:
         """
